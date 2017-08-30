@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TAP-TAP BUG!</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body onload="setbestscore()">
+
+<script src="script.js"></script>
+<col>
+<row1>
+<!-- Start Page menu -->
+	<form id="startPage">
+		<input type="radio" name="level" value="lvl1" onclick="setlevel1()" checked>Level 1<br>
+		<input type="radio" name="level" value="lvl2" onclick="setlevel2()">Level 2
+		</br>
+        <br>
+		High Score: <div id="highscore"></div></br>
+        Game rules:  There are 5 pieces of food and 3 different bugs.<br>
+        Tap a bug to kill it and gain score points.</br>
+        Game is over when there is no food left or time is up! Good luck!<br></br>
+		<input type="button" value="Start" onclick="switchView()"/>
+	</form>
+<!-- Game page menu -->
+	<gamemenu id="gamemenu">
+		<left><div id="timer"></div></left>
+		<center>
+		<!-- MAKE A PAUSE BUTTON IMAGE AND REPLACE "Pause" WITH IT WITH ID = "pause" -->
+		<button id="play" onclick="play()">
+			<img id="pause" src="pause.jpg">
+		</button>
+		</center>
+		<right>Score: <span id="score"></span></right>
+	</gamemenu>
+</row1>
+<row2>
+	<canvas id="canvas" width="400" height="600" style="border: 1px solid;">
+	</canvas>
+    <!-- End game menu -->
+	<form id="end">
+		GAME OVER <br></br>
+        Score: <div id="finalscore"></div>
+        <br>
+		<input type="button" value="Replay?" onclick="replay()"/>
+		<input type="button" value="Main" onclick="mainmenu()"/>
+	</form>
+</row2>
+
+
+</col>
+</body>
+</html>
