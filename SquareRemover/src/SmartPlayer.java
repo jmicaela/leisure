@@ -44,7 +44,7 @@ public class SmartPlayer {
 										// returns top tile of vertical match
 		 								// {[3/4], [2/4]}
 		
-		CHARWANTEDOCCURENCES = (match[0] == -1) ? 2 : 1;
+		
 		
 		// search vertical match
 		if (match[0] == -1 && match[2] == -1) {
@@ -54,7 +54,18 @@ public class SmartPlayer {
 				SQRRMV.rotateBoardCwise();
 				return new int[] {-1, -1, -1, -1};
 			}
-
+			isVertical = true;
+		}
+		
+		CHARWANTED = THEBOARD[(match[0] == -1) ? match[2] : match[0]].charAt((match[0] == -1) ? match[3] : match[1]);		
+		
+		// decide which index to drag occurance to
+		int[] dragOccurencesTo = getMissingTilesOfMatch(match); 	
+					// {[1st loc],[2nd loc]}
+					// {[1st loc], -1, -1} if a 3/4 match				
+				
+		// rotate back THEBOARD if match is vertical
+		if (isVertical) {
 			SQRRMV.rotateBoardCwise();
 			
 			// rotate match indices
@@ -68,16 +79,10 @@ public class SmartPlayer {
 				match[2] = THEBOARD.length - 1 - match[3];
 				match[3] = j;
 			}
-
+			
 		}
-		
 
-		CHARWANTED = THEBOARD[(match[0] == -1) ? match[2] : match[0]].charAt((match[0] == -1) ? match[3] : match[1]);		
-		// decide which index to drag occurance to
-		int[] dragOccurencesTo = getMissingTilesOfMatch(match, CHARWANTED, isVertical); 	// {[1st loc],[2nd loc]}
-															// {[1st loc], -1, -1} if a 3/4 match				
-		
-		// get missing tile indices for this match
+		CHARWANTEDOCCURENCES = (match[0] == -1) ? 2 : 1;
 		
 		
 		
@@ -145,17 +150,37 @@ public class SmartPlayer {
 		return ret;
 	}
 	
-	// assumes match is horizontal match on THEBOARD
-	public int[] getMissingTilesOfMatch(int[] match, char charWanted, boolean isVertical) {
-		Pattern p = Pattern.compile(String.valueOf(charWanted));
-		Matcher m;
-		for (int row = 0; row < THEBOARD.length-1; row++) {
-			m = p.matcher(THEBOARD[row]);
-			if (m.find()) {
-				return new int[] {row, m.start()};
+	// assumes match is a horizontal match on THEBOARD
+	// returns indices of unmatched tiles
+	public int[] getMissingTilesOfMatch(int[] match) {
+		int rowToAvoid = match[0] == -1 ? match[2] : match[0];
+		int col = match[0] == -1 ? match[3] : match[1];
+		
+		// look for 1 slot if match is a 3/4
+		if (match[2] == -1) {
+			if (0 < rowToAvoid) {
+				if (THEBOARD[rowToAvoid-1].charAt(col) == THEBOARD[rowToAvoid].charAt(col)) {
+					return new int[] {rowToAvoid-1, col+1, -1, -1};
+				} else if (THEBOARD[rowToAvoid-1].charAt(col+1) == THEBOARD[rowToAvoid].charAt(col)) {
+					return new int[] {rowToAvoid-1, col, -1, -1};
+				}
 			}
+		
+			// else check THEBOARD[rowToAvoid+1]
+			if (THEBOARD[rowToAvoid+1].charAt(col) == THEBOARD[rowToAvoid].charAt(col)) {
+				return new int[] {rowToAvoid+1, col+1, -1, -1};
+			} else if (THEBOARD[rowToAvoid+1].charAt(col+1) == THEBOARD[rowToAvoid].charAt(col)) {
+				return new int[] {rowToAvoid+1, col, -1, -1};
+			}
+			
+			return new int[] {-1, -1, -1, -1,}; // code should never reach this line
 		}
-		return new int[] {-1, -1};
+		
+		// else return a 2 slot if match is 2/4
+		if (0 < rowToAvoid) {
+			return new int[] {rowToAvoid-1, col, rowToAvoid-1, col+1};
+		}		
+		return new int[] {rowToAvoid+1, col, rowToAvoid+1, col+1};
 	}
 	
 	public int[] collectPathSwaps(boolean isVertical, int[] match, int[] occurance) {
