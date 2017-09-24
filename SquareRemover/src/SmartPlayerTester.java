@@ -54,6 +54,24 @@ public class SmartPlayerTester {
 	
 	@Test
 	public void testDragTile() {
+		String[] board = {"GGGG", "RGGG", "GGGR", "GGGG"};
+		SmartPlayer sp = new SquareRemover(4, "RGBY".toCharArray(), board, STARTSEED).createSmartPlayer();
+		
+		int[][] fromTiles = {
+				{2, 3},
+				{2, 0}
+		};
+		int[][] toTiles = {
+				{1, 0},
+				{1, 3}
+		};
+		int[][] results = {
+				{},
+				
+		};
+		for (int i=0; i<2; i++) {
+			assertArrayEquals(sp.dragTile(fromTiles[i], toTiles[i]), results[i]);
+		}
 		
 	}
 	
