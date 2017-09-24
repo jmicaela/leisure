@@ -15,7 +15,8 @@ public class Tester {
 	@After
 	public void tearDown() throws Exception {
 	}
-
+	
+	// 1 test case
 	@Test
 	public void adjustScoreBruteTest() {
 		// board with matches
@@ -24,8 +25,9 @@ public class Tester {
 		String[] withMatches2 = {"YBRG", "GYYR", "RYYG", "BYYB"};
 		String[] withMatches3 = {"RRRR", "RRRR", "RRRR", "RRRR"};
 		
-		SquareRemover s = new SquareRemover();
-		s.setTheBoard(withMatches0);
+		int startSeed = 1;
+		SquareRemover s = new SquareRemover(4, "RGBY".toCharArray(), withMatches0, startSeed);
+		//s.setTheBoard(withMatches0);
 		int[] out = s.adjustScoreBrute();
 		System.out.println(Arrays.toString(out));
 		assertArrayEquals(out, new int[] {-1, -1, -1, -1, -1, -1, -1, -1});

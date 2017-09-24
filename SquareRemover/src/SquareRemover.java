@@ -30,16 +30,15 @@ public class SquareRemover {
 	
 	public static void main (String []args) {
 		
-		SquareRemover s = new SquareRemover();
 		String[] withMatches0 = {"RGBY", "BRYY", "RGRB", "RRGG"};
 		String[] withMatches1 = {"RRGG", "RRBY", "YBBG", "GBBR"};
 		String[] withMatches2 = {"YBYG", "GYYR", "RYYG", "BYYB"};
 		String[] withMatches3 = {"RRRR", "RRRR", "RRRR", "RRRR"};
 		
-		s.setTheBoard(withMatches0);
-		s.STARTSEED = 1;
-		s.SCORE = 0;
-		s.playIt (4, "RGBY".toCharArray(), withMatches0, s.STARTSEED);
+		int STARTSEED = 1;
+
+		SquareRemover s = new SquareRemover(4, "RGBY".toCharArray(), withMatches0, STARTSEED);
+		s.playIt ();
 		
 		//int[] out = s.sniffTilesAround();
 		//System.out.println(Arrays.toString(out));
@@ -85,6 +84,7 @@ public class SquareRemover {
 	}
 	
 	public SquareRemover(int colors, char[] colorsChar, String[] board, int startSeed) {
+		this.THEBOARD = board;
 		this.COLORSCHAR = colorsChar;
 		this.COLORS = colors; 		// newcolor = buff[i] % colors
 		this.THEBUFFER = genBuffer(startSeed, 4);
@@ -359,7 +359,7 @@ public class SquareRemover {
 		// else if working on a workable match
 		// can assume there exists enough chars wanted on the board
 		
-		int[] ret = dragWantedChar(WANTEDCHARIDX, WANTEDCHAR);
+		int[] ret = new int[] {-1, -1}; //dragWantedChar(WANTEDCHARIDX, WANTEDCHAR);
 		
 		// check if need another WANTEDCHAR
 		// check if done collecting WANTEDCHAR, reset WANTEDCHAR = '\u0000', WANTEDCHARIDX = {-1, -1}, LASTMATCHes(?)
@@ -372,6 +372,8 @@ public class SquareRemover {
 	public int[] dragWantedChar(int[] wantedCharIdx, int[] pullToIdx) {
 		// find move that puts charWanted closer to pullToIdx
 		// update current WANTEDCHARIDX
+		
+		return new int[] {-1, -1};
 	}
 	public int[] getWantedCharIdx(int rowToAvoid, char charWanted) {
 		Pattern p = Pattern.compile(String.valueOf(charWanted));
@@ -632,6 +634,10 @@ public class SquareRemover {
 			// else move index to the right and recurse
 			return getBuffTile(idx + 1);
 		}
+	}
+	
+	SmartPlayer createSmartPlayer() {
+		return new SmartPlayer(this);
 	}
 
 	// check if THEBOARD[row][col] color == THEBOARD[compareToRow][compareToCol] color
