@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Tester {
+public class SquareRemoverTester {
 
 	@Before
 	public void setUp() throws Exception {

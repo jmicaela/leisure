@@ -192,7 +192,7 @@ public class SmartPlayer {
 		List<Integer> moves = new ArrayList<Integer>();
 		
 		// if occuranceToIdx, occuranceFromIdx not aligned by row/col
-		int axis = -1;
+		/*int axis = -1;
 		if (occuranceToIdx[0] == occuranceFromIdx[0]) {
 			axis = 0;
 		} else if (occuranceToIdx[1] == occuranceFromIdx[1]) {
@@ -227,8 +227,9 @@ public class SmartPlayer {
 				}
 				occuranceFromIdx[0] = occuranceFromIdx[0] + ctr - 1;
 			}			
-		}
-
+		}*/
+		
+		int[] someMoves = dragTile(occuranceFromIdx, occuranceToIdx);
 
 		
 		int matchInBetween = -1; 	// match in between is {match[2*matchInBetween], match[2*matchInBetween + 1]}
@@ -284,26 +285,39 @@ public class SmartPlayer {
 	
 	// return moves to drag occuranceFromIdx to occuranceToIdx
 	// assumes both tiles are aligned by either row/ col but doesn't know which
+	// notice this method doesnt' requrie THEBOARD
 	int[] dragTile(int[] occuranceFromIdx, int[] occuranceToIdx) {
 		List<Integer> moves = new ArrayList<Integer>();
 		
 		int dragAxis = (occuranceToIdx[0] == occuranceFromIdx[0]) ? 0 : 1;
+		
 		int notDragAxis = Math.floorMod(dragAxis-1, 2);
 		int direction = (occuranceFromIdx[notDragAxis] - occuranceToIdx[notDragAxis]) > 0 ? -1 : 1;
-		int lastLoc = occuranceFromIdx[notDragAxis];
 		int ctr = 1*direction;
 		
-		while (lastLoc != occuranceToIdx[notDragAxis]) {
-			moves.add(occuranceFromIdx[dragAxis] + ctr - direction);
-			moves.add(occuranceFromIdx[1]);
-			moves.add(occuranceFromIdx[dragAxis] + ctr);
-			moves.add(occuranceFromIdx[1]);
-			ctr += direction;
+		if (dragAxis == 1) {
+			while (occuranceToIdx[notDragAxis] != (occuranceFromIdx[notDragAxis] + ctr - direction)) {
+				moves.add(occuranceFromIdx[notDragAxis] + ctr - direction);
+				moves.add(occuranceFromIdx[dragAxis]);
+				moves.add(occuranceFromIdx[notDragAxis] + ctr);
+				moves.add(occuranceFromIdx[dragAxis]);
+				ctr += direction;
+			}
+		} 
+		else {
+			while (occuranceToIdx[notDragAxis] != (occuranceFromIdx[notDragAxis] + ctr - direction)) {
+				moves.add(occuranceFromIdx[dragAxis]);
+				moves.add(occuranceFromIdx[notDragAxis] + ctr - direction);
+				moves.add(occuranceFromIdx[dragAxis]);
+				moves.add(occuranceFromIdx[notDragAxis] + ctr);
+				ctr += direction;
+			}
 		}
 		
-		occuranceFromIdx[notDragAxis] = occuranceFromIdx[notDragAxis] + ctr - 1;
+
+		//System.out.println(moves);
 		
-		return new int[] {-1, -1};
+		return ArrayUtils.toPrimitive(moves.toArray(new Integer[moves.size()]));
 	}
 	
 	

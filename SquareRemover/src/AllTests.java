@@ -3,7 +3,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ Tester.class, SmartPlayerTester.class })
+@SuiteClasses({ SquareRemoverTester.class, SmartPlayerTester.class })
 public class AllTests {
 
 }

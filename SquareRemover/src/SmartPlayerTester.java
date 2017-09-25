@@ -59,18 +59,24 @@ public class SmartPlayerTester {
 		
 		int[][] fromTiles = {
 				{2, 3},
-				{2, 0}
+				{1, 0}
 		};
 		int[][] toTiles = {
-				{1, 0},
+				{2, 0},
 				{1, 3}
 		};
 		int[][] results = {
-				{},
-				
+				{2, 3, 2, 2, 2, 2, 2, 1, 2, 1, 2, 0},
+				{1, 0, 1, 1, 1, 1, 1, 2, 1, 2, 1, 3}				
 		};
+		int[] moves;
 		for (int i=0; i<2; i++) {
-			assertArrayEquals(sp.dragTile(fromTiles[i], toTiles[i]), results[i]);
+			moves = sp.dragTile(fromTiles[i], toTiles[i]);
+			
+			System.out.println(Arrays.toString(moves));
+			System.out.println(Arrays.toString(results[i]));
+			
+			assertArrayEquals(results[i], moves);
 		}
 		
 	}
