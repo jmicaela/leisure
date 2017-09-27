@@ -72,13 +72,8 @@ public class SmartPlayerTester {
 		int[] moves;
 		for (int i=0; i<2; i++) {
 			moves = sp.dragTile(fromTiles[i], toTiles[i]);
-			
-			System.out.println(Arrays.toString(moves));
-			System.out.println(Arrays.toString(results[i]));
-			
 			assertArrayEquals(results[i], moves);
 		}
-		
 	}
 	
 	// test collectPathSwaps() where 1 missing tile already aligned to match
@@ -90,74 +85,38 @@ public class SmartPlayerTester {
 	  * RRGG
 	  * */
 	@Test
-	public void testCollectPathSwapsAlignedMatch() {
-		/*String[] woMatchInBetween1 = {"GGGG", "GGGG", "RGGR", "RRGG"};
-		int[] match = {3, 0, 3, 1};
-		int[] occuranceToIdx = {2, 1};
-		int[] occuranceFromIdx = {2, 3};
-				
-		SquareRemover s = new SquareRemover(4, "RGBY".toCharArray(), woMatchInBetween1, STARTSEED);
-		SmartPlayer sp = s.createSmartPlayer();
-
-		int[] correctMoves = new int[] {2, 3, 2, 2, 2, 2, 2, 1};
-		// w/o match in between
-		for (int i=0; i < 4; i++) {
-			 int[] moves = sp.collectPathSwaps(match, occuranceToIdx, occuranceFromIdx);
-			 s.rotateBoardCwise();
-			 sp.rotateTileIndices(match);
-			 sp.rotateTileIndices(occuranceToIdx);
-			 sp.rotateTileIndices(occuranceFromIdx);
-			 sp.rotateTileIndices(correctMoves);
-			 
-			 assertTrue(moves == correctMoves);
-		}		
-		
-		// w/ match in between
-		String[] wMatchInBetween1 = {"GGGG", "GGGG", "GRGR", "RRGG"};
-		match = new int[] {3, 0, 3, 1};
-		occuranceFromIdx = new int[] {2, 3};
-		occuranceToIdx = new int[] {2, 0};
-		
-		s = new SquareRemover(4, "RGBY".toCharArray(), woMatchInBetween1, STARTSEED);
-		sp = s.createSmartPlayer();
-		
-		correctMoves = new int[] {2, 3, 2, 2, 2, 1, 2, 0, 2, 2, 2, 1};
-		*/
-		
+	public void testCollectPathSwaps() {		
 		SquareRemover s;
 		SmartPlayer sp;
-		String[][] hasMatchesInBetween = {
+		String[][] boards = {
 				{"GGGG", "GGGG", "RGGR", "RRGG"},
-				{"GGGG", "GGGG", "GRGR", "RRGG"}
+				{"GGGG", "GGGG", "GRGR", "RRGG"},
+				{"GGGG", "GGGR", "GRGG", "RRGG"}
 		};
 		int[][] correctMoves = {
 				{2, 3, 2, 2, 2, 2, 2, 1},
-				{2, 3, 2, 2, 2, 1, 2, 0, 2, 2, 2, 1}
+				{2, 1, 2, 0, 2, 3, 2, 2, 2, 2, 2, 1},
+				{1, 3, 2, 3, 2, 1, 2, 0, 2, 3, 2, 2, 2, 2, 2, 1}
 		};
-		for (int i=0; i<2; i++) {
-			int[] match = new int[] {3, 0, 3, 1};
-			int[] occuranceToIdx = new int[] {2, i};
-			int[] occuranceFromIdx = new int[] {2, 3};
-
-			s = new SquareRemover(4, "RGBY".toCharArray(), hasMatchesInBetween[i], STARTSEED);
+		int[] match = new int[] {3, 0, 3, 1};
+		int[][] occuranceFromIdx = {{2, 3}, {2, 3}, {1, 3}};
+		int[][] occuranceToIdx = {{2, 1}, {2, 0}, {2, 0}};
+		
+		for (int i=0; i<3; i++) {
+			s = new SquareRemover(4, "RGBY".toCharArray(), boards[i], STARTSEED);
 			sp = s.createSmartPlayer();
 			
-			for (int j=0; j<4; i++) {
+			assertArrayEquals(correctMoves[i], sp.collectPathSwaps(match, occuranceFromIdx[i], occuranceToIdx[i]));
+			/*for (int j=0; j<4; i++) {
 				 int[] moves = sp.collectPathSwaps(match, occuranceToIdx, occuranceFromIdx);
 				 s.rotateBoardCwise();
 				 sp.rotateTileIndices(match);
 				 sp.rotateTileIndices(occuranceToIdx);
 				 sp.rotateTileIndices(occuranceFromIdx);
-				 sp.rotateTileIndices(correctMoves[i]);
-				 
+				 sp.rotateTileIndices(correctMoves[i]);				 
 				 assertTrue(moves == correctMoves[i]);
-			}
+			}*/
 		}
-	}
-	
-	@Test
-	public void testcollectPathSwapsUnalignedMatch() {
-		fail("Not yet implemented");
 	}
 
 }

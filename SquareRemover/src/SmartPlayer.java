@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -189,99 +190,63 @@ public class SmartPlayer {
 	
 	
 	public int[] collectPathSwaps(int[] match, int[] occuranceToIdx, int[] occuranceFromIdx) {
-		List<Integer> moves = new ArrayList<Integer>();
-		
-		// if occuranceToIdx, occuranceFromIdx not aligned by row/col
-		/*int axis = -1;
-		if (occuranceToIdx[0] == occuranceFromIdx[0]) {
-			axis = 0;
-		} else if (occuranceToIdx[1] == occuranceFromIdx[1]) {
-			axis = 1;
-		}
-		
-		int skipAxis = 0;	// 0 => shift along row
-							// 1 => shift along col
+		int[] moves = {-1};
 		
 		// store moves to align row/col of occuranceToIdx occuranceFromIdx
-		int ctr = 1;
-		if (axis == -1) {	
-			skipAxis = (Math.abs(occuranceToIdx[0] - occuranceFromIdx[0]) < Math.abs(occuranceToIdx[1] - occuranceFromIdx[1])) ? 0 : 1;
-			int lastLoc = occuranceFromIdx[skipAxis];
-			if (skipAxis == 0) {
-				while (lastLoc != occuranceToIdx[skipAxis]) {
-					moves.add(occuranceFromIdx[skipAxis] + ctr - 1);
-					moves.add(occuranceFromIdx[1]);
-					moves.add(occuranceFromIdx[skipAxis] + ctr);
-					moves.add(occuranceFromIdx[1]);
-					ctr += 1;
-				}
-				occuranceFromIdx[1] = occuranceFromIdx[1] + ctr - 1;
+		if (occuranceToIdx[0] != occuranceFromIdx[0] && occuranceToIdx[1] != occuranceFromIdx[1]) {
+			// if dragged along columns
+			boolean alignCol = (Math.abs(occuranceToIdx[0] - occuranceFromIdx[0]) < Math.abs(occuranceToIdx[1] - occuranceFromIdx[1]));
+			if (alignCol) {
+				moves = dragTile(occuranceFromIdx, new int[] {occuranceFromIdx[0], occuranceToIdx[1]});
+				occuranceFromIdx[1] = occuranceToIdx[1];
+			} else {
+				moves = dragTile(occuranceFromIdx, new int[] {occuranceToIdx[0], occuranceFromIdx[1]});
+				occuranceFromIdx[0] = occuranceToIdx[0];
 			}
-			else {
-				while (lastLoc != occuranceToIdx[skipAxis]) {
-					moves.add(occuranceFromIdx[0]);
-					moves.add(occuranceFromIdx[skipAxis] + ctr - 1);
-					moves.add(occuranceFromIdx[0]);
-					moves.add(occuranceFromIdx[skipAxis] + ctr);
-					ctr += 1;
-				}
-				occuranceFromIdx[0] = occuranceFromIdx[0] + ctr - 1;
-			}			
-		}*/
+		}
 		
-		int[] someMoves = dragTile(occuranceFromIdx, occuranceToIdx);
-
-		
+				
 		int matchInBetween = -1; 	// match in between is {match[2*matchInBetween], match[2*matchInBetween + 1]}
 									// match in between is either of tiles in matches[]
 		// check if has matching tile in between
 		for (int i=0; i<2; i++) {
-			if (match[(2*i) + axis] == occuranceToIdx[axis]) {
-				int j = Math.floorMod(i-1, 2);
-				if ((occuranceToIdx[j] < match[(2*i)+j] && match[(2*i)+j] < occuranceFromIdx[j]) || 
-						(occuranceToIdx[j] > match[(2*i)+j] && match[(2*i)+j] > occuranceFromIdx[j])) {
-					matchInBetween = i;
+			for (int k=0; k<2; k++) {
+				if (match[(2*i) + k] == occuranceToIdx[k]) {
+					int j = Math.floorMod(i-1, 2);
+					if ((occuranceToIdx[j] < match[(2*i)+j] && match[(2*i)+j] < occuranceFromIdx[j]) || 
+							(occuranceToIdx[j] > match[(2*i)+j] && match[(2*i)+j] > occuranceFromIdx[j])) {
+						matchInBetween = i;
+					}
 				}
 			}
 		}
 		
 		
 		// if applicable, move matchInBetween towards occuranceToIdx
+		// since is in between occurance to/ from Idx, occuranceFromIdx should still be aligned to new occuranceToIdx
 		if (matchInBetween != -1) {
-			moves.add(match[2*matchInBetween]);
-			moves.add(match[2*matchInBetween+1]);
-			moves.add(occuranceToIdx[0]);
-			moves.add(occuranceToIdx[1]);
-		}
-		
-		
-		// now move occuranceFromIdx towards {match[2*matchInBetween], match[2*matchInBetween + 1]}
-		skipAxis = Math.floorMod(skipAxis-1, 2);
-		int lastLoc = occuranceFromIdx[skipAxis];
-		ctr = 1;
-		if (skipAxis == 0) {
-			while (lastLoc != match[2*matchInBetween + skipAxis]) {
-				moves.add(occuranceFromIdx[skipAxis] + ctr - 1);
-				moves.add(occuranceFromIdx[1]);
-				moves.add(occuranceFromIdx[skipAxis] + ctr);
-				moves.add(occuranceFromIdx[1]);
-				ctr += 1;
+			if (moves[0] == -1) {
+				moves = new int[] {match[2*matchInBetween], match[2*matchInBetween+1], occuranceToIdx[0], occuranceToIdx[1]};
 			}
-			occuranceFromIdx[1] = occuranceFromIdx[1] + ctr - 1;
+			else {
+				moves = ArrayUtils.addAll(moves, new int[] {match[2*matchInBetween], match[2*matchInBetween+1], occuranceToIdx[0], occuranceToIdx[1]});
+			}
+			occuranceToIdx[0] = match[2*matchInBetween];
+			occuranceToIdx[1] = match[2*matchInBetween+1];
 		}
+		
+		
+		// now move occuranceFromIdx towards new occuranceToIdx
+		if (moves[0] == -1) {
+			moves = dragTile(occuranceFromIdx, occuranceToIdx);
+		} 
 		else {
-			while (lastLoc != match[2*matchInBetween + skipAxis]) {
-				moves.add(occuranceFromIdx[0]);
-				moves.add(occuranceFromIdx[skipAxis] + ctr - 1);
-				moves.add(occuranceFromIdx[0]);
-				moves.add(occuranceFromIdx[skipAxis] + ctr);
-				ctr += 1;
-			}
-			occuranceFromIdx[0] = occuranceFromIdx[0] + ctr - 1;
-		}			
-
-		return ArrayUtils.toPrimitive(moves.toArray(new Integer[moves.size()]));
+			moves = ArrayUtils.addAll(moves, dragTile(occuranceFromIdx, occuranceToIdx));	
+		}
+		
+		return moves;
 	}
+	
 	
 	// return moves to drag occuranceFromIdx to occuranceToIdx
 	// assumes both tiles are aligned by either row/ col but doesn't know which
